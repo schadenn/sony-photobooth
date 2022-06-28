@@ -3,13 +3,11 @@ import { useState, useEffect, useRef, useCallback } from "react"
 import "./App.css"
 import ImageReview from "./components/ImageReview"
 import ShotsReview from "./components/ShotsReview"
-import GameShow from "./components/GameShow"
 import { SHOTTIME, REVIEWTIME, SERVER_PORT } from "./constants"
 import { socket } from "./components/WebSocket"
 
 function App() {
   const [photoSrc, setPhotoSrc] = useState("")
-  const [isGameShow, setIsGameShow] = useState(false)
   const [shots, setShots] = useState([])
   const [shotTimer, setShotTimer] = useState(SHOTTIME)
   const [reviewTimer, setReviewTimer] = useState(REVIEWTIME)
@@ -74,11 +72,6 @@ function App() {
     socket.on("end-timer", () => {
       setShotTimer(0)
     })
-    window.addEventListener("keydown", (ev) => {
-      if (ev.altKey && ev.ctrlKey && ev.key.toLowerCase() === "g") {
-        setIsGameShow(true)
-      }
-    })
     fetchPhotos()
   }, [])
 
@@ -117,9 +110,7 @@ function App() {
     }
   }, [shotTimer, takePhoto])
 
-  return isGameShow ? (
-    <GameShow />
-  ) : (
+  return (
     <div
       className="App"
       style={{
