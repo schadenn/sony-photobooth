@@ -11,7 +11,7 @@ function ShotsReview({ files, onDoneClick: onDone, isReviewing, onOpenClick }) {
     setDetailed(null)
     onDone()
   }
-  const srcPrefix = `http://localhost:${SERVER_PORT}/photos/`
+  const srcPrefix = `http://${window.location.hostname}:${SERVER_PORT}/photos/`
   const images = files
     .map((src) => srcPrefix + src)
     .map((src) => ({

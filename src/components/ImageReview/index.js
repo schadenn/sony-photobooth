@@ -1,7 +1,7 @@
 import { SERVER_PORT } from "../../constants"
 
 function ImageReview({ src, time, onDoneClick }) {
-  const srcPrefix = `http://localhost:${SERVER_PORT}/photos/`
+  const srcPrefix = `http://${window.location.hostname}:${SERVER_PORT}/photos/`
 
   return (
     <div>

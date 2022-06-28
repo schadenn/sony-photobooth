@@ -4,7 +4,7 @@ import "./App.css"
 import ImageReview from "./components/ImageReview"
 import ShotsReview from "./components/ShotsReview"
 import { SHOTTIME, REVIEWTIME, SERVER_PORT } from "./constants"
-import { socket } from "./components/WebSocket"
+// import { socket } from "./components/WebSocket"
 
 function App() {
   const [photoSrc, setPhotoSrc] = useState("")
@@ -17,30 +17,31 @@ function App() {
   const [noReview, setNoReview] = useState(false)
   const reviewInterval = useRef([])
   const shotInterval = useRef([])
+  const ip = window.location.hostname
 
   const fetchPhotos = () => {
-    fetch(`http://localhost:${SERVER_PORT}/getPhotos`)
+    fetch(`http://${ip}:${SERVER_PORT}/getPhotos`)
       .then((res) => res.json())
       .then((res) => setShots(res.files))
       .catch((e) => console.error("Failed to fetch", e))
   }
 
   const startRec = () => {
-    fetch(`http://localhost:${SERVER_PORT}/startMovieRec`)
+    fetch(`http://${ip}:${SERVER_PORT}/startMovieRec`)
       .then((res) => console.log(res) || res.json())
       .then((res) => console.log(res))
       .catch((e) => console.error("Failed to fetch", e))
   }
 
   const stopRec = () => {
-    fetch(`http://localhost:${SERVER_PORT}/stopMovieRec`)
+    fetch(`http://${ip}:${SERVER_PORT}/stopMovieRec`)
       .then((res) => console.log(res) || res.json())
       .then((res) => console.log(res))
       .catch((e) => console.error("Failed to fetch", e))
   }
 
   const getEvent = () => {
-    fetch(`http://localhost:${SERVER_PORT}/getEvent`)
+    fetch(`http://${ip}:${SERVER_PORT}/getEvent`)
       .then((res) => console.log(res) || res.json())
       .then((res) => console.log(res))
       .catch((e) => console.error("Failed to fetch", e))
@@ -48,7 +49,7 @@ function App() {
 
   const takePhoto = useCallback(() => {
     setTimeout(() => setLoading(true), 900)
-    fetch(`http://localhost:${SERVER_PORT}/takePhoto`)
+    fetch(`http://${ip}:${SERVER_PORT}/takePhoto`)
       .then((res) => res.json())
       .then((res) => {
         setPhotoSrc(res.file)
@@ -60,18 +61,18 @@ function App() {
   }, [])
 
   useEffect(() => {
-    socket.on("start-timer", ({ time }) => {
-      setShotTimer(time * 1000)
-      shotInterval.current.push("websocket_controlled")
-      setNoReview(true)
-    })
-    socket.on(
-      "time-left",
-      ({ time }) => console.log("time-left", time) || setShotTimer(time * 1000)
-    )
-    socket.on("end-timer", () => {
-      setShotTimer(0)
-    })
+    // socket.on("start-timer", ({ time }) => {
+    //   setShotTimer(time * 1000)
+    //   shotInterval.current.push("websocket_controlled")
+    //   setNoReview(true)
+    // })
+    // socket.on(
+    //   "time-left",
+    //   ({ time }) => console.log("time-left", time) || setShotTimer(time * 1000)
+    // )
+    // socket.on("end-timer", () => {
+    //   setShotTimer(0)
+    // })
     fetchPhotos()
   }, [])
 
@@ -99,7 +100,7 @@ function App() {
   useEffect(() => {
     if (shotTimer < 2000) setTakingPhoto(true)
     if (!(shotTimer % 1000) && shotTimer)
-      fetch("http://localhost:3000/triggerFocus")
+      fetch(`http://${ip}:${SERVER_PORT}/triggerFocus`)
     if (shotTimer === 0) {
       takePhoto()
       shotInterval.current
@@ -208,7 +209,7 @@ function App() {
           {!loading && (
             <img
               class="videoStream"
-              src={`http://localhost:${SERVER_PORT}/startViewFinder`}
+              src={`http://${ip}:${SERVER_PORT}/startViewFinder`}
               alt="video stream"
               style={{
                 width: "100%",
