@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  background-color: #222;
 }
 
 .App-logo {
@@ -19,6 +20,20 @@
 
 .scale {
   transform: scaleX(-0.8);
+}
+
+.flip::before {
+  position: absolute;
+  content: " ";
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.3)
+}
+
+.flip::after {
+  position: absolute;
+  content: "Gallerie";
+  transform: scaleX(-1);
 }
 
 .flip,

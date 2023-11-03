@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "chokidar": "^3.5.3",
+    "concurrently": "^8.0.1",
     "cors": "^2.8.5",
     "cra-template": "1.1.2",
     "cross-env": "^7.0.3",
@@ -16,17 +17,16 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-gallery-carousel": "^0.2.4",
-    "react-grid-gallery": "^0.5.5",
+    "react-grid-gallery": "^1.0.0",
     "react-player": "^2.9.0",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^4.0.3",
     "socket.io": "4.5.0",
     "socket.io-client": "4.5.0"
   },
   "scripts": {
-    "start": "concurrently \"nodemon ./server/app.mjs\" \"nodemon ./websocket/app.mjs\" \"react-scripts start\"",
     "start:ws": "cross-env DEBUG=socket* nodemon ./websocket/app.mjs",
-    "start:cam": "nodemon ./server/app.mjs",
-    "start:ui": "react-scripts start",
+    "start:cam": "cross-env NODE_OPTIONS=--openssl-legacy-provider nodemon ./server/app.mjs",
+    "start:ui": "cross-env NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

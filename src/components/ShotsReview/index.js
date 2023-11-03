@@ -1,5 +1,5 @@
 import { useState } from "react"
-import Gallery from "react-grid-gallery"
+import { Gallery } from "react-grid-gallery"
 import Carousel from "react-gallery-carousel"
 import "react-gallery-carousel/dist/index.css"
 import { SERVER_PORT } from "../../constants"
@@ -16,11 +16,11 @@ function ShotsReview({ files, onDoneClick: onDone, isReviewing, onOpenClick }) {
     .map((src) => srcPrefix + src)
     .map((src) => ({
       src,
-      thumbnail: src,
-      thumbnailWidth: 280,
-      thumbnailHeight: 174,
+      width: 280,
+      height: 174,
     }))
 
+    
   return (
     <>
       {isReviewing ? (
@@ -35,7 +35,7 @@ function ShotsReview({ files, onDoneClick: onDone, isReviewing, onOpenClick }) {
             zIndex: "2337",
           }}
         >
-          {detailed && (
+          {!!detailed && (
             <div
               style={{
                 position: "absolute",
@@ -62,7 +62,7 @@ function ShotsReview({ files, onDoneClick: onDone, isReviewing, onOpenClick }) {
             <Gallery
               images={images.reverse()}
               enableImageSelection={false}
-              onClickThumbnail={(index) => setDetailed(index + 1)}
+              onClick={(index) => setDetailed(index + 1)}
             />
           </div>
           <button
@@ -100,11 +100,11 @@ function ShotsReview({ files, onDoneClick: onDone, isReviewing, onOpenClick }) {
             backgroundSize: "cover",
             backgroundPosition: "center",
             cursor: "pointer",
+            color: "white"
           }}
           onClick={onOpenClick}
           id="openManualPreview"
         >
-          <p className="flip">Gallerie</p>
         </div>
       )}
     </>

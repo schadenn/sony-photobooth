@@ -52,6 +52,7 @@ function App() {
     fetch(`http://${ip}:${SERVER_PORT}/takePhoto`)
       .then((res) => res.json())
       .then((res) => {
+        console.log("photo done", res)
         setPhotoSrc(res.file)
         setTakingPhoto(false)
         setTimeout(() => setLoading(false), 200)
@@ -139,7 +140,7 @@ function App() {
         <ShotsReview
           files={shots}
           isReviewing={manualReview}
-          onOpenClick={() => setManualReview(true)}
+          onOpenClick={() => !console.log('CLICKED') && setManualReview(true)}
           onDoneClick={() => setManualReview(false)}
         />
       ) : null}
@@ -174,6 +175,7 @@ function App() {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
+                color: "white"
               }}
             >
               <button id="startRec" onClick={startRec}>
@@ -196,10 +198,11 @@ function App() {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              color: "white"
             }}
           >
             <p style={{ fontSize: "5vw" }}>
-              {(loading && "Foto kommt sofort") ||
+              {(loading && "Vorschau kommt sofort") ||
                 (takingPhoto && "Lächeln bitte :)") ||
                 (!shotInterval.current.length &&
                   "👆 Antippen für ein Foto 👆") ||
@@ -217,7 +220,7 @@ function App() {
                 position: "absolute",
                 left: 0,
                 top: 0,
-                zIndex: "0",
+                zIndex: 0,
               }}
             />
           )}

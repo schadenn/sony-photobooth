@@ -7,7 +7,7 @@ import {socket} from "../ws.mjs"
 
 function initCam() {}
 
-function initCallCamera(host, port, urlPath) {
+async function initCallCamera(host, port, urlPath) {
   const save = {
     host: host || "192.168.122.1",
     port: port || 8080,
@@ -20,15 +20,16 @@ function initCallCamera(host, port, urlPath) {
   }
 
   const cameraPath = `http://${save.host}:${save.port}/${save.urlPath}`
-  console.log("FETCH", cameraPath)
 
-  fetch(cameraPath, {
-    method: "POST",
-    body: JSON.stringify({ ...rpcReq, method: "startRecMode", params: [] }),
-  })
-    .then((res) => res.json())
-    .then((res) => console.log(res))
-    .catch((err) => console.log(err))
+  let err = true
+  
+    console.log("FETCH", cameraPath)
+  
+    const result = await fetch(cameraPath, {
+      method: "POST",
+      body: JSON.stringify({ ...rpcReq, method: "startRecMode", params: [] }),
+    })
+
 
   return (method, params) =>
     console.log("callCamera", cameraPath) ||
@@ -36,14 +37,14 @@ function initCallCamera(host, port, urlPath) {
       method: "POST",
       body: JSON.stringify({ ...rpcReq, method, params: params || [] }),
     })
+      .then((camRes) => console.log("SUCCESS", camRes) || camRes.json())
       .catch((err) => {
         console.log("ERROR", err)
       })
-      .then((camRes) => console.log("SUCCESS") || camRes.json())
 }
 
-export default function createCamera(host, port, urlPath) {
-  const callCamera = initCallCamera(host, port, urlPath)
+export default async function createCamera(host, port, urlPath) {
+  const callCamera = await initCallCamera(host, port, urlPath)
 
   const photoDir = path.join(process.argv[1], "../photos/")
 
@@ -67,6 +68,7 @@ export default function createCamera(host, port, urlPath) {
     stopLiveview: () => callCamera("stopLiveview"),
     startViewfinder: (req, res) =>
       callCamera("startLiveview", null).then((camRes) => {
+        if (!camRes) return
         console.log("startLiveview", camRes)
         const liveviewUrl = url.parse(camRes.result[0])
         // console.log(liveviewUrl);

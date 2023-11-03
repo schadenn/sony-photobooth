@@ -1,12 +1,24 @@
+import { useEffect, useState } from "react"
 import { SERVER_PORT } from "../../constants"
 
 function ImageReview({ src, time, onDoneClick }) {
+  const [image, setImage] = useState()
   const srcPrefix = `http://${window.location.hostname}:${SERVER_PORT}/photos/`
-
+  console.log("REVIEW", srcPrefix + src)
+  useEffect(()=>{
+    fetch(srcPrefix + src).then((res)=> res.blob()).then(blob => {
+      const reader = new FileReader()
+      reader.readAsDataURL(blob)
+      reader.onloadend = () => {
+        setImage(reader.result)
+      }
+    })
+  },  [])
   return (
     <div>
       <img
-        src={srcPrefix + src}
+      key={time}
+        src={image}
         class="scale"
         alt="review"
         style={{
