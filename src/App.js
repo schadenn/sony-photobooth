@@ -1,65 +1,65 @@
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useState, useEffect, useRef, useCallback } from "react";
 
-import "./App.css"
-import ImageReview from "./components/ImageReview"
-import ShotsReview from "./components/ShotsReview"
-import { SHOTTIME, REVIEWTIME, SERVER_PORT } from "./constants"
+import "./App.css";
+import ImageReview from "./components/ImageReview";
+import ShotsReview from "./components/ShotsReview";
+import { SHOTTIME, REVIEWTIME, SERVER_PORT } from "./constants";
 // import { socket } from "./components/WebSocket"
 
 function App() {
-  const [photoSrc, setPhotoSrc] = useState("")
-  const [shots, setShots] = useState([])
-  const [shotTimer, setShotTimer] = useState(SHOTTIME)
-  const [reviewTimer, setReviewTimer] = useState(REVIEWTIME)
-  const [takingPhoto, setTakingPhoto] = useState(false)
-  const [manualReview, setManualReview] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [noReview, setNoReview] = useState(false)
-  const reviewInterval = useRef([])
-  const shotInterval = useRef([])
-  const ip = window.location.hostname
+  const [photoSrc, setPhotoSrc] = useState("");
+  const [shots, setShots] = useState([]);
+  const [shotTimer, setShotTimer] = useState(SHOTTIME);
+  const [reviewTimer, setReviewTimer] = useState(REVIEWTIME);
+  const [takingPhoto, setTakingPhoto] = useState(false);
+  const [manualReview, setManualReview] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [noReview, setNoReview] = useState(false);
+  const reviewInterval = useRef([]);
+  const shotInterval = useRef([]);
+  const ip = window.location.hostname;
 
   const fetchPhotos = () => {
     fetch(`http://${ip}:${SERVER_PORT}/getPhotos`)
       .then((res) => res.json())
       .then((res) => setShots(res.files))
-      .catch((e) => console.error("Failed to fetch", e))
-  }
+      .catch((e) => console.error("Failed to fetch", e));
+  };
 
   const startRec = () => {
     fetch(`http://${ip}:${SERVER_PORT}/startMovieRec`)
       .then((res) => console.log(res) || res.json())
       .then((res) => console.log(res))
-      .catch((e) => console.error("Failed to fetch", e))
-  }
+      .catch((e) => console.error("Failed to fetch", e));
+  };
 
   const stopRec = () => {
     fetch(`http://${ip}:${SERVER_PORT}/stopMovieRec`)
       .then((res) => console.log(res) || res.json())
       .then((res) => console.log(res))
-      .catch((e) => console.error("Failed to fetch", e))
-  }
+      .catch((e) => console.error("Failed to fetch", e));
+  };
 
   const getEvent = () => {
     fetch(`http://${ip}:${SERVER_PORT}/getEvent`)
       .then((res) => console.log(res) || res.json())
       .then((res) => console.log(res))
-      .catch((e) => console.error("Failed to fetch", e))
-  }
+      .catch((e) => console.error("Failed to fetch", e));
+  };
 
   const takePhoto = useCallback(() => {
-    setTimeout(() => setLoading(true), 900)
+    setTimeout(() => setLoading(true), 900);
     fetch(`http://${ip}:${SERVER_PORT}/takePhoto`)
       .then((res) => res.json())
       .then((res) => {
-        console.log("photo done", res)
-        setPhotoSrc(res.file)
-        setTakingPhoto(false)
-        setTimeout(() => setLoading(false), 200)
-        fetchPhotos()
+        console.log("photo done", res);
+        setPhotoSrc(res.file);
+        setTakingPhoto(false);
+        setTimeout(() => setLoading(false), 200);
+        fetchPhotos();
       })
-      .catch((e) => console.error("Failed to fetch", e))
-  }, [])
+      .catch((e) => console.error("Failed to fetch", e));
+  }, []);
 
   useEffect(() => {
     // socket.on("start-timer", ({ time }) => {
@@ -74,43 +74,46 @@ function App() {
     // socket.on("end-timer", () => {
     //   setShotTimer(0)
     // })
-    fetchPhotos()
-  }, [])
+    fetchPhotos();
+  }, []);
 
   useEffect(() => {
     if (photoSrc) {
       if (noReview) {
-        setNoReview(false)
+        setNoReview(false);
       } else {
         reviewInterval.current.push(
-          setInterval(() => setReviewTimer((oldValue) => oldValue - 10), 10)
-        )
+          setInterval(
+            () => setReviewTimer((oldValue) => oldValue - 1000),
+            1000,
+          ),
+        );
       }
     }
-  }, [photoSrc])
+  }, [photoSrc]);
 
   useEffect(() => {
     if (!reviewTimer) {
-      reviewInterval.current.forEach((interval) => clearInterval(interval))
-      reviewInterval.current = []
-      setReviewTimer(REVIEWTIME)
-      window.location.href = window.location.href
+      reviewInterval.current.forEach((interval) => clearInterval(interval));
+      reviewInterval.current = [];
+      setReviewTimer(REVIEWTIME);
+      window.location.href = window.location.href;
     }
-  }, [reviewTimer])
+  }, [reviewTimer]);
 
   useEffect(() => {
-    if (shotTimer < 2000) setTakingPhoto(true)
+    if (shotTimer < 2000) setTakingPhoto(true);
     if (!(shotTimer % 1000) && shotTimer)
-      fetch(`http://${ip}:${SERVER_PORT}/triggerFocus`)
+      fetch(`http://${ip}:${SERVER_PORT}/triggerFocus`);
     if (shotTimer === 0) {
-      takePhoto()
+      takePhoto();
       shotInterval.current
         .filter((id) => id !== "websocket_controlled")
-        .forEach((interval) => clearInterval(interval))
-      shotInterval.current = []
-      setShotTimer(SHOTTIME)
+        .forEach((interval) => clearInterval(interval));
+      shotInterval.current = [];
+      setShotTimer(SHOTTIME);
     }
-  }, [shotTimer, takePhoto])
+  }, [shotTimer, takePhoto]);
 
   return (
     <div
@@ -131,8 +134,8 @@ function App() {
           src={photoSrc}
           time={reviewTimer}
           onDoneClick={() => {
-            setReviewTimer(0)
-            window.location.href = window.location.href
+            setReviewTimer(0);
+            window.location.href = window.location.href;
           }}
         />
       ) : null}
@@ -140,7 +143,7 @@ function App() {
         <ShotsReview
           files={shots}
           isReviewing={manualReview}
-          onOpenClick={() => !console.log('CLICKED') && setManualReview(true)}
+          onOpenClick={() => !console.log("CLICKED") && setManualReview(true)}
           onDoneClick={() => setManualReview(false)}
         />
       ) : null}
@@ -156,12 +159,15 @@ function App() {
           onClick={(ev) => {
             if (
               !["doneBtn", "openManualPreview", "startRec", "stopRec"].includes(
-                ev.target.id
+                ev.target.id,
               )
             ) {
               shotInterval.current.push(
-                setInterval(() => setShotTimer((oldValue) => oldValue - 10), 10)
-              )
+                setInterval(
+                  () => setShotTimer((oldValue) => oldValue - 1000),
+                  1000,
+                ),
+              );
             }
           }}
         >
@@ -175,7 +181,7 @@ function App() {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                color: "white"
+                color: "white",
               }}
             >
               <button id="startRec" onClick={startRec}>
@@ -198,7 +204,7 @@ function App() {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              color: "white"
+              color: "white",
             }}
           >
             <p style={{ fontSize: "5vw" }}>
@@ -227,7 +233,7 @@ function App() {
         </div>
       ) : null}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
